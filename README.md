@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/lruthotto/OptimTools.jl.svg?branch=master)](https://travis-ci.org/lruthotto/KrylovMethods.jl)
-[![Build status](https://ci.appveyor.com/api/projects/status/tkn9ssik9n9vgdt2?svg=true)](https://ci.appveyor.com/project/lruthotto/optimtools-jl)
+[![Build Status](https://travis-ci.org/lruthotto/OptimTools.jl.svg?branch=master)](https://travis-ci.org/lruthotto/OptimTools.jl.svg)
+[![Build status](https://ci.appveyor.com/api/projects/status/61rviuke750imsc1?svg=true)](https://ci.appveyor.com/project/lruthotto/optimtools-jl)
 [![Coverage Status](https://coveralls.io/repos/lruthotto/OptimTools.jl/badge.svg)](https://coveralls.io/r/lruthotto/OptimTools.jl)
 
 
