@@ -1,0 +1,33 @@
+using OptimTools
+using Base.Test
+
+# test exact line search for quadratic
+A = 10*speye(100)
+f(x)    = 0.5*dot(x,A*x)
+df(x)   = A*x
+d2f(x)  = A
+x0 = randn(100)
+
+println("Test SD,NLCG,BFGS with exact line search ")
+# steepest descent
+x1,flag1,his1 = sd(f,df,x0,maxIter=1000,atol=1e-6,out=0)
+@test norm(x1)<1e-6*norm(x0)
+x2,flag2,his2 = sd(f,df,x0,maxIter=1000,atol=1e-6,out=0, lineSearch=(f,df,fk,dfk,xk,pk)-> (-dot(pk,dfk)/dot(pk,A*pk),1))
+@test norm(x2)<1e-6
+@test size(his2,1)==2 #should converge in one iteration
+
+# nlcg
+x1,flag1,his1 = nlcg(f,df,x0,maxIter=1000,atol=1e-6,out=0)
+@test norm(x1)<1e-6*norm(x0)
+x2,flag2,his2 = nlcg(f,df,x0,maxIter=1000,atol=1e-6,out=0, lineSearch=(f,df,fk,dfk,xk,pk)-> (-dot(pk,dfk)/dot(pk,A*pk),1))
+@test norm(x2)<1e-6
+@test size(his2,1)==2 #should converge in one iteration
+
+# bfgs
+x1,flag1,his1 = bfgs(f,df,x0,maxIter=1000,atol=1e-6,out=0)
+@test norm(x1)<1e-6*norm(x0)
+x2,flag2,his2 = bfgs(f,df,x0,maxIter=1000,atol=1e-6,out=0, lineSearch=(f,df,fk,dfk,xk,pk)-> (-dot(pk,dfk)/dot(pk,A*pk),1))
+@test norm(x2)<1e-6
+@test size(his2,1)==2 #should converge in one iteration
+
+println("Done!")

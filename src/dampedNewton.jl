@@ -1,6 +1,7 @@
 export dampedNewton
 
-function dampedNewton(f::Function,J::Function,H::Function,x::Vector;linesearch=armijo,maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false)
+function dampedNewton(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
+	lineSearch::Function=(f,J,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=10))
 
     his = zeros(maxIter,3)
     X = (storeInterm) ? zeros(length(x),maxIter) : []
@@ -23,7 +24,7 @@ function dampedNewton(f::Function,J::Function,H::Function,x::Vector;linesearch=a
        	pk  = - d2f\df
 
         # line search
-        ak,his[i,3] = linesearch(f,fc,df,x,pk,maxIter=30) 
+        ak,his[i,3] = lineSearch(f,J,fc,df,x,pk) 
         if his[i,3]==-1
             flag = -3
             his  = his[1:i,:]

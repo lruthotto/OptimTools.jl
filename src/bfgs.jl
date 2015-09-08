@@ -1,6 +1,7 @@
 export bfgs
 
-function bfgs(f::Function,J::Function,x::Vector;H=eye(length(x)), maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false)
+function bfgs(f::Function,J::Function,x::Vector;H=eye(length(x)), maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
+	lineSearch::Function=(f,J,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=30))
 
     his = zeros(maxIter,3)
     I   = speye(length(x))
@@ -22,7 +23,7 @@ function bfgs(f::Function,J::Function,x::Vector;H=eye(length(x)), maxIter=20,ato
         # get search direction
         pk    = - H*df
         # line search
-        ak,his[i,3] = armijo(f,fc,df,x,pk,maxIter=30) 
+        ak,his[i,3] = lineSearch(f,J,fc,df,x,pk) 
         if out>0
             @printf "iter=%4d\t|f|=%1.2e\t|df|=%1.2e\tLS=%d\n" i his[i,1] his[i,2] his[i,3]
         end
