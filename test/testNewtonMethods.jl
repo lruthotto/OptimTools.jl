@@ -8,7 +8,7 @@ end
 
 his = []; flag = []; x0 = [];
 
-secondOrderMethods = (dampedNewton,newton)
+secondOrderMethods = (dampedNewton,newton,modnewton)
 # try stopping based on atol
 for method in secondOrderMethods
 	println("testing $(string(method))")
@@ -24,7 +24,7 @@ for method in secondOrderMethods
 		x0   = float(xsol) + 1*randn(size(xsol))*norm(xsol)
 		atol = 1e-10
 		
-		xnt,flag,his = method(fk,dfk,d2fk, x0,maxIter=100,atol=atol,out=1*(k==2))
+		xnt,flag,his = method(fk,dfk,d2fk, x0,maxIter=200,atol=atol,out=1*(k==2))
 		@test (flag==-2) | (norm(dfk(xnt)) .< atol)	
 		if flag==-2
 			@test minimum(eig(d2fk(xnt))[1]) < 0
