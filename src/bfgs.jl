@@ -1,6 +1,6 @@
 export bfgs
 
-function bfgs(f::Function,J::Function,x::Vector;H=eye(length(x)), maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
+function bfgs(f::Function,J::Function,x::Vector;H=speye(length(x)), maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
 	lineSearch::Function=(f,J,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=30))
 
     his = zeros(maxIter,3)
@@ -32,13 +32,18 @@ function bfgs(f::Function,J::Function,x::Vector;H=eye(length(x)), maxIter=20,ato
              his  = his[1:i,:]
              break;
         end
-
         x    += ak*pk
         dfnew = J(x)
-        wk    = ak*pk
+        sk    = ak*pk
         yk    = dfnew - df
-        H     = (I - (wk*yk')/dot(wk,yk)) * H * (I - (yk*wk')/dot(wk,yk)) + (wk*wk')/dot(yk,wk)
-        
+        if dot(yk,sk)>0 # ensure that approximate Hessians remain positive definite
+        	H     = (I - (sk*yk')/dot(sk,yk)) * H * (I - (yk*sk')/dot(sk,yk)) + (sk*sk')/dot(yk,sk)
+        else
+            if out>0
+                warn("bfgs detected negative curvature. Resetting Hessian")
+            end
+            H = speye(length(x))
+        end
         df   = dfnew
         i+=1     
     end

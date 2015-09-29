@@ -8,7 +8,7 @@ end
 
 his = []; flag = []; x0 = [];
 
-secondOrderMethods = (dampedNewton,newton,modnewton)
+secondOrderMethods = (dampedNewton,newton,modnewton,newtoncg)
 # try stopping based on atol
 for method in secondOrderMethods
 	println("testing $(string(method))")

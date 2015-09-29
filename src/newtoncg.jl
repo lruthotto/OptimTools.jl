@@ -3,7 +3,7 @@ export newtoncg
 function newtoncg(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
 	lineSearch::Function=(f,J,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=10))
 
-    his = zeros(maxIter,3)
+    his = zeros(maxIter,6)
     X = (storeInterm) ? zeros(length(x),maxIter) : []
     i = 1; flag = -1; LL = []
     while i<=maxIter
@@ -20,7 +20,7 @@ function newtoncg(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=
         
         # get search direction
         d2f = H(x)
-        pk, = cg(d2f,-df,out=-1)
+        pk,his[i,6],his[i,5],his[i,4] = cg(d2f,-df,out=-1)
       # line search
         ak,his[i,3] = lineSearch(f,J,fc,df,x,pk) 
         if his[i,3]==-1
@@ -29,7 +29,7 @@ function newtoncg(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=
             break
         end
       if out>0
-            @printf "iter=%04d\t|f|=%1.2e\t|df|=%1.2e\n" i his[i,1] his[i,2]
+            @printf "iter=%04d\t|f|=%1.2e\t|df|=%1.2e\tcgIter=%d\tLS=%1.4f\n" i his[i,1] his[i,2] his[i,4] ak
         end
         # update
         x  += ak*pk
