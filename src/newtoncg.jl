@@ -1,7 +1,7 @@
 export newtoncg
 
 function newtoncg(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
-	lineSearch::Function=(f,J,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=10))
+	lineSearch::Function=(f,J,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=20),tolCG=1e-2,maxIterCG=30)
 
     his = zeros(maxIter,6)
     X = (storeInterm) ? zeros(length(x),maxIter) : []
@@ -20,7 +20,10 @@ function newtoncg(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=
         
         # get search direction
         d2f = H(x)
-        pk,his[i,6],his[i,5],his[i,4] = cg(d2f,-df,out=-1)
+        pk,his[i,6],his[i,5],his[i,4] = cg(d2f,-df,out=-1,tol=tolCG,maxIter=maxIterCG)
+        if his[i,6]==-2 && norm(pk)==0
+            pk = -df
+        end
       # line search
         ak,his[i,3] = lineSearch(f,J,fc,df,x,pk) 
         if his[i,3]==-1

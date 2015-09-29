@@ -12,5 +12,6 @@ module OptimTools
 	include("lineSearch.jl")
 	include("modnewton.jl")
 	include("newtoncg.jl")
+	include("sr1.jl")
 	include("tr.jl")
 end

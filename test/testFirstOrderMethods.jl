@@ -8,7 +8,7 @@ end
 
 his = []; flag = []; x0 = [];
 
-firstOrderMethods = (sd,bfgs,nlcg)
+firstOrderMethods = (sd,bfgs,nlcg,sr1)
 # try stopping based on atol
 for method in firstOrderMethods
 	println("testing $(string(method))")
@@ -23,9 +23,9 @@ for method in firstOrderMethods
 		x0   = float(xsol) + .01*randn(size(xsol))*norm(xsol)
 		atol = 1e-4
 		
-		xsd,flag,his = method(fk,dfk, x0,maxIter=1000000,atol=atol,out=1*(k==3))
+		xsd,flag,his = method(fk,dfk, x0,maxIter=1000000,atol=atol,out=1*(k==2))
 		
-		@test all(diff(his[:,1]).<0)
+		@test all(diff(his[:,1]).<=0)
 		@test norm(dfk(xsd)) .< atol		
 	end
 end

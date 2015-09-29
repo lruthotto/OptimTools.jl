@@ -27,7 +27,7 @@ function trcauchy(f::Function,J::Function,H::Function,x::Vector;
 
     his = zeros(maxIter,4)
     X   = (storeInterm) ? zeros(length(x),maxIter) : []
-    i   = 1; flag = -1; LL = []; alph=0.0
+    i   = 1; flag = -1; alph=0.0
     while i<=maxIter
         fc = f(x)
         df = J(x)
@@ -80,7 +80,7 @@ function trdogleg(f::Function,J::Function,H::Function,x::Vector;
 
     his = zeros(maxIter,5)
     X   = (storeInterm) ? zeros(length(x),maxIter) : []
-    i   = 1; flag = -1; LL = []; alph=0.0
+    i   = 1; flag = -1; alph=0.0
     while i<=maxIter
         fc = f(x)
         df = J(x)
