@@ -85,5 +85,5 @@ trt::Function=(f,fc,df,d2f,x,st,Delta)->trtest(f,fc,df,d2f,x,st,Delta))
     end
     
     if storeInterm; X = X[:,1:i]; end
-    return x,flag,his,X
+    return x,flag,his,X,B
 end

@@ -60,5 +60,5 @@ function bfgs(f::Function,J::Function,x::Vector;H=speye(length(x)), maxIter=20,a
     end
     
     if storeInterm; X = X[:,1:i]; end
-    return x,flag,his,X
+    return x,flag,his,X,H
 end

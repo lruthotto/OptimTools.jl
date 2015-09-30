@@ -42,11 +42,11 @@ function newtoncg(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=
 
     if out>=0
         if flag==-1
-            println(@sprintf("newton iterated maxIter (=%d) times but reached only atol of %1.2e instead of tol=%1.2e",i,his[i,2],atol))
+            println(@sprintf("newtoncg iterated maxIter (=%d) times but reached only atol of %1.2e instead of tol=%1.2e",i,his[i,2],atol))
         elseif flag==-2
-            println(@sprintf("newton stopped because the Hessian at iteration %d was not positive definite.",i))
+            println(@sprintf("newtoncg stopped because the Hessian at iteration %d was not positive definite.",i))
         elseif out>1
-            println(@sprintf("newton achieved desired atol of %1.2e at iteration %d.",atol,i))
+            println(@sprintf("newtoncg achieved desired atol of %1.2e at iteration %d.",atol,i))
         end
     end
     if storeInterm; X = X[:,1:i]; end
