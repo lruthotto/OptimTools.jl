@@ -8,9 +8,13 @@
 OptimTools.jl
 =========================
 
-&copy; 2015 [Lars Ruthotto](http://www.mathcs.emory.edu/~lruthot/). Released under the [MIT License](https://github.com/lruthotto/KrylovMethods.jl/blob/master/LICENSE).
+&copy; 2015 [Lars Ruthotto](http://www.mathcs.emory.edu/~lruthot/). Released under the [MIT License](https://github.com/lruthotto/OptimTools.jl/blob/master/LICENSE).
 
 Julia implementation of some tools for numerical optimization. ``OptimTools`` is primarily designed as a teaching tool. The first priority is to provide simple and easy-to-adapt implementations. The second priority is computational efficiency and testing.
+
+## Requirements
+
+This package requires Julia version 0.3 and [KrylovMethods](https://github.com/lruthotto/KrylovMethods.jl). 
 
 ## Installation
 
