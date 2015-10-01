@@ -1,4 +1,5 @@
-export armijo,golden
+export armijo
+export goldenLS
 
 function armijo(f::Function,fc,df,xc,pc;maxIter=10, c1=1e-4,b=0.5)
 LS = 1
@@ -17,7 +18,7 @@ end
 return t,LS
 end
 
-function golden(f::Function,xc,pc,a,b;atol=1e-2,maxIter=40)
+function goldenLS(f::Function,xc,pc,a,b;atol=1e-2,maxIter=40)
 	ratio = (sqrt(5)-1)/2.0
 	# make sure points we have an interval
 	a,b   = (a<b)? (a,b) :  (b,a)
