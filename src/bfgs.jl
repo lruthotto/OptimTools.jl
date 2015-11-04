@@ -5,12 +5,12 @@ function bfgs(f::Function,J::Function,x::Vector;H=speye(length(x)), maxIter=20,a
 
     his = zeros(maxIter,3)
     I   = speye(length(x))
-    df  = J(x)
     X   = (storeInterm) ? zeros(length(x),maxIter) : []
+    fc  = f(x)
+    df  = J(x)
  
     i = 1; flag = -1    
     while i<=maxIter
-        fc = f(x)
 
         his[i,1:2] = [fc norm(df)]
         if storeInterm; X[:,i] = x; end;
@@ -33,6 +33,7 @@ function bfgs(f::Function,J::Function,x::Vector;H=speye(length(x)), maxIter=20,a
              break;
         end
         x    += ak*pk
+        fc    = f(x)
         dfnew = J(x)
         sk    = ak*pk
         yk    = dfnew - df

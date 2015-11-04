@@ -1,7 +1,7 @@
 export newtoncg
 
 function newtoncg(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
-	lineSearch::Function=(f,J,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=20),tolCG=1e-2,maxIterCG=30)
+	lineSearch::Function=(f,J,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=20),tolCG=1e-2,maxIterCG=30,P=d2f->identity)
 
     his = zeros(maxIter,6)
     X = (storeInterm) ? zeros(length(x),maxIter) : []
@@ -20,7 +20,8 @@ function newtoncg(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=
         
         # get search direction
         d2f = H(x)
-        pk,his[i,6],his[i,5],his[i,4] = cg(d2f,-df,out=-1,tol=tolCG,maxIter=maxIterCG)
+        PC  = P(d2f)
+        pk,his[i,6],his[i,5],his[i,4] = cg(d2f,-df,out=-1,tol=tolCG,maxIter=maxIterCG,M=PC)
         if his[i,6]==-2 && norm(pk)==0
             pk = -df
         end
@@ -43,8 +44,8 @@ function newtoncg(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=
     if out>=0
         if flag==-1
             println(@sprintf("newtoncg iterated maxIter (=%d) times but reached only atol of %1.2e instead of tol=%1.2e",i,his[i,2],atol))
-        elseif flag==-2
-            println(@sprintf("newtoncg stopped because the Hessian at iteration %d was not positive definite.",i))
+        elseif flag==-3
+            println(@sprintf("newtoncg stopped at iteration %d due to a line search fail.",i))
         elseif out>1
             println(@sprintf("newtoncg achieved desired atol of %1.2e at iteration %d.",atol,i))
         end

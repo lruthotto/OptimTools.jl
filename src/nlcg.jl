@@ -6,13 +6,13 @@ function nlcg(f::Function,J::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,
     his = zeros(maxIter,3)
     X = (storeInterm) ? zeros(length(x),maxIter) : []
 
+	fc = f(x)
     df    = J(x)
     dfOld = copy(df)
     pk    = -df
    
     i = 1; flag = -1;
     while i<=maxIter
-        fc = f(x)
         his[i,1:2] = [fc norm(df)]
         if storeInterm; X[:,i] = x; end;
         
@@ -35,6 +35,7 @@ function nlcg(f::Function,J::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,
         
         # update x and H
         x  += ak*pk
+        fc  = f(x)
         df  = J(x)
         
         # beta  = dot(df, df-dfOld)/norm(dfOld)^2 # Polak-Ribiere

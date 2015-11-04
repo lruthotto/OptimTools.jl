@@ -4,12 +4,12 @@ function sr1(f::Function,J::Function,x::Vector;B=speye(length(x)),Delta=2.0, max
 trt::Function=(f,fc,df,d2f,x,st,Delta)->trtest(f,fc,df,d2f,x,st,Delta))
 
     his = zeros(maxIter,5)
-    df  = J(x)
     X   = (storeInterm) ? zeros(length(x),maxIter) : []
  
     i = 1; flag = -1; alph=0.0
     while i<=maxIter
         fc = f(x)
+        df  = J(x)
 
         his[i,1:2] = [fc norm(df)]
         if storeInterm; X[:,i] = x; end;
@@ -70,7 +70,6 @@ trt::Function=(f,fc,df,d2f,x,st,Delta)->trtest(f,fc,df,d2f,x,st,Delta))
 	       B +=  ((yk-B*st)*(yk-B*st)')/dot(st,yk-B*st)
         end
 		x     = xn
-		df    = J(x)
 		Delta = Deltan
 		i+=1
     end
