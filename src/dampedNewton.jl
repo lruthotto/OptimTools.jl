@@ -31,7 +31,7 @@ function dampedNewton(f::Function,J::Function,H::Function,x::Vector;maxIter=20,a
             break
         end
         if out>0
-            @printf "iter=%04d\t|f|=%1.2e\t|df|=%1.2e\tLS=%d\n" i his[i,1] his[i,2] his[i,3]
+            @printf "iter=%04d\tf=%1.2e\t|df|=%1.2e\tLS=%d\n" i his[i,1] his[i,2] his[i,3]
         end
         # update x and H
         x  += ak*pk

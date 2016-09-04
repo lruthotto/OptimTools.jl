@@ -16,6 +16,10 @@ Julia implementation of some tools for numerical optimization. ``OptimTools`` is
 
 This package requires Julia version 0.3 and [KrylovMethods](https://github.com/lruthotto/KrylovMethods.jl). 
 
+## Examples
+
+Some (hopefully) educational examples can be found in the [examples](https://github.com/lruthotto/OptimTools.jl/tree/master/examples) section.
+
 ## Installation
 
 At the Julia prompt, type

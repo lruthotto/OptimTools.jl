@@ -8,7 +8,7 @@ function newton(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=1e
     while i<=maxIter
         fc = f(x)
         df = J(x)
-        his[i,:] = [norm(fc) norm(df)]
+        his[i,:] = [fc norm(df)]
         if storeInterm; X[:,i] = x; end;
 
         if(norm(df)<atol)
@@ -32,7 +32,7 @@ function newton(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=1e
         end
         pk    = - (LL\df)
         if out>0
-            @printf "iter=%04d\t|f|=%1.2e\t|df|=%1.2e\n" i his[i,1] his[i,2]
+            @printf "iter=%04d\tf=%1.2e\t|df|=%1.2e\n" i his[i,1] his[i,2]
         end
         # update
         x  += pk
