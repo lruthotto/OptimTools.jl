@@ -1,7 +1,23 @@
 export checkDerivative
 
+"""
+checkDerivative(f,x0;out,tol,nSuccess)
+
+Check if function f provides correct derivatives around point x0 using a Taylor expansion.
+
+Inputs:
+
+	f::Function  - fx,dfx= f(x) provides function value and derivative
+	x::Array     - vector around which to test the derivatives
+	out::Bool    - flag for activating printing (default: true)
+	tol::Number  - tolerance to judge if error in linearization decreases quadratically (default: 1.9)
+	nSuccess:Int - number of quadratically-decreasing steps needed to decide that derivative is correct
+	
+Outputs:
+	pass, Error, Order
+
+"""
 function checkDerivative(f::Function,x0;out::Bool=true,tol::Number=1.9,nSuccess::Int=3)
-# checkDerivative(f::Function,x0;out::Bool=true,tol::Float=1.9,nSuccess::Int=3)
 	if out
 		println(@sprintf("%9s\t%9s\t%9s\t%9s\t%9s\t%5s","h","E0","E1","O1","O2","OK?"))
 	end
@@ -19,7 +35,7 @@ function checkDerivative(f::Function,x0;out::Bool=true,tol::Number=1.9,nSuccess:
 		Error[j,1] = norm(f0-ft)/norm(f0)           # Error TaylorPoly 0
 		Error[j,2] = norm(f0 .+10.0^(-j)*dvf .- ft)/norm(f0) # Error TaylorPoly 1
 		if j>1
-			Order[j,:] = log10(Error[j-1,:]./Error[j,:]);
+			Order[j,:] = log10.(Error[j-1,:]./Error[j,:]);
 		end
 		if (Order[j,2]>tol) || (Error[j,1]/Error[j,2] > 100); Success[j]=1; end
 		if out 

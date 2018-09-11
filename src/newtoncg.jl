@@ -1,18 +1,24 @@
 export newtoncg
 
-function newtoncg(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
-	lineSearch::Function=(f,J,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=20),tolCG=1e-2,maxIterCG=30,P=d2f->identity)
+"""
+newtoncg(f,df,H,x)
+
+Newton-CG method for solving min_x f(x)
+
+"""
+function newtoncg(f::Function,df::Function,H::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
+	lineSearch::Function=(f,df,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=20),tolCG=1e-2,maxIterCG=30,P=d2f->identity)
 
     his = zeros(maxIter,6)
     X = (storeInterm) ? zeros(length(x),maxIter) : []
     i = 1; flag = -1; LL = []
     while i<=maxIter
-        fc = f(x)
-        df = J(x)
-        his[i,1:2] = [norm(fc) norm(df)]
+        fk  = f(x)
+        dfk = df(x)
+        his[i,1:2] = [norm(fk) norm(dfk)]
         if storeInterm; X[:,i] = x; end;
 
-        if(norm(df)<atol)
+        if(norm(dfk)<atol)
             flag = 0
             his = his[1:i,:]
             break
@@ -20,13 +26,13 @@ function newtoncg(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=
         
         # get search direction
         d2f = H(x)
-        PC  = P(d2f)
-        pk,his[i,6],his[i,5],his[i,4] = cg(d2f,-df,out=-1,tol=tolCG,maxIter=maxIterCG,M=PC)
+        PC  = P(d2f) # preconditioner
+        pk,his[i,6],his[i,5],his[i,4] = cg(d2f,-dfk,out=-1,tol=tolCG,maxIter=maxIterCG,M=PC)
         if his[i,6]==-2 && norm(pk)==0
-            pk = -df
+            pk = -dfk
         end
       # line search
-        ak,his[i,3] = lineSearch(f,J,fc,df,x,pk) 
+        ak,his[i,3] = lineSearch(f,df,fk,dfk,x,pk) 
         if his[i,3]==-1
             flag = -3
             his  = his[1:i,:]

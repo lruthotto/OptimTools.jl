@@ -1,29 +1,35 @@
 export nlcg
 
-function nlcg(f::Function,J::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
-	lineSearch::Function=(f,J,fk,dfk,xk,pk)-> armijo(f,fk,dfk,xk,pk,maxIter=30) )
+"""
+nlcg(f,df,x)
+
+Nonlinear conjugate gradient method for solving min_x f(x)
+
+"""
+function nlcg(f::Function,df::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
+	lineSearch::Function=(f,df,fk,dfk,xk,pk)-> armijo(f,fk,dfk,xk,pk,maxIter=30) )
 
     his = zeros(maxIter,3)
     X = (storeInterm) ? zeros(length(x),maxIter) : []
 
-	fc = f(x)
-    df    = J(x)
-    dfOld = copy(df)
-    pk    = -df
+	fk    = f(x)
+    dfk   = df(x)
+    dfOld = copy(dfk)
+    pk    = -dfk
    
     i = 1; flag = -1;
     while i<=maxIter
-        his[i,1:2] = [fc norm(df)]
+        his[i,1:2] = [fk norm(dfk)]
         if storeInterm; X[:,i] = x; end;
         
-        if (norm(df)<atol)
+        if (norm(dfk)<atol)
             flag=0
             his = his[1:i,:]
             break
         end
         
         # line search
-        ak,his[i,3] = lineSearch(f,J,fc,df,x,pk)
+        ak,his[i,3] = lineSearch(f,df,fk,dfk,x,pk)
         if out>0
             @printf "iter=%04d\t|f|=%1.2e\t|df|=%1.2e\tLS=%d\n" i his[i,1] his[i,2] his[i,3]
         end
@@ -35,13 +41,13 @@ function nlcg(f::Function,J::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,
         
         # update x and H
         x  += ak*pk
-        fc  = f(x)
-        df  = J(x)
+        fk  = f(x)
+        dfk  = df(x)
         
         # beta  = dot(df, df-dfOld)/norm(dfOld)^2 # Polak-Ribiere
-        beta  = norm(df)^2/norm(dfOld)^2 # Fletcher-Reeves
-        pk    = -df  + beta*pk
-        dfOld = copy(df)
+        beta  = norm(dfk)^2/norm(dfOld)^2 # Fletcher-Reeves
+        pk    = -dfk  + beta*pk
+        dfOld = copy(dfk)
         i+=1   
     end
     i = min(maxIter,i)

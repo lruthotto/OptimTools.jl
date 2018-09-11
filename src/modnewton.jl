@@ -1,19 +1,25 @@
 export modnewton
 
-function modnewton(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,
+"""
+modnewton(f,df,H,x)
+
+Newton method with Hessian shift for solving min_x f(x)
+
+"""
+function modnewton(f::Function,df::Function,H::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,
 	storeInterm::Bool=false,beta=1e-1,
-		lineSearch::Function=(f,J,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=10))
+		lineSearch::Function=(f,df,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=10))
 
     his = zeros(maxIter,4)
     X = (storeInterm) ? zeros(length(x),maxIter) : []
     i = 1; flag = -1; LL = []
     while i<=maxIter
-        fc = f(x)
-        df = J(x)
-        his[i,1:2] = [norm(fc) norm(df)]
+        fk = f(x)
+        dfk = df(x)
+        his[i,1:2] = [norm(fk) norm(dfk)]
         if storeInterm; X[:,i] = x; end;
 
-        if(norm(df)<atol)
+        if(norm(dfk)<atol)
             flag = 0
             his = his[1:i,:]
             break
@@ -42,10 +48,10 @@ function modnewton(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol
             end
         end
         his[i,4] = nfac
-        pk    = - (LL\df)
+        pk    = - (LL\dfk)
    
         # line search
-		ak,his[i,3] = lineSearch(f,J,fc,df,x,pk) 
+		ak,his[i,3] = lineSearch(f,df,fk,dfk,x,pk) 
         if his[i,3]==-1
             flag = -3
             his  = his[1:i,:]

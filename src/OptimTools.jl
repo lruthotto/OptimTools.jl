@@ -9,7 +9,6 @@ module OptimTools
 	include("sd.jl")
 	include("bfgs.jl")
 	include("nlcg.jl")
-	include("lineSearch.jl")
 	include("modnewton.jl")
 	include("newtoncg.jl")
 	include("sr1.jl")

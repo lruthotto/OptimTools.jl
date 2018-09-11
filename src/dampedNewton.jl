@@ -1,19 +1,25 @@
 export dampedNewton
 
-function dampedNewton(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
-	lineSearch::Function=(f,J,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=10))
+"""
+dampedNewton(f,df,H,x)
+
+Damped Newton method for solving min_x f(x)
+
+"""
+function dampedNewton(f::Function,df::Function,H::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
+	lineSearch::Function=(f,df,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=10))
 
     his = zeros(maxIter,3)
     X = (storeInterm) ? zeros(length(x),maxIter) : []
     
     i = 1; flag = -1
     while i<=maxIter
-        fc   = f(x)
-        df   = J(x)
-        his[i,1:2] = [fc norm(df)]
+        fk   = f(x)
+        dfk  = df(x)
+        his[i,1:2] = [fk norm(dfk)]
         if storeInterm; X[:,i] = x; end;
         
-        if(norm(df)<atol)
+        if(norm(dfk)<atol)
             flag = 0
             his = his[1:i,:]
             break
@@ -21,10 +27,10 @@ function dampedNewton(f::Function,J::Function,H::Function,x::Vector;maxIter=20,a
         
         # get search direction
 	    d2f = H(x)
-       	pk  = - d2f\df
+       	pk  = - d2f\dfk
 
         # line search
-        ak,his[i,3] = lineSearch(f,J,fc,df,x,pk) 
+        ak,his[i,3] = lineSearch(f,df,fk,dfk,x,pk) 
         if his[i,3]==-1
             flag = -3
             his  = his[1:i,:]

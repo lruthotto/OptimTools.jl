@@ -1,17 +1,23 @@
 export newton
 
-function newton(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false)
+"""
+newton(f,df,H,x)
+
+Newton method for solving min_x f(x)
+
+"""
+function newton(f::Function,df::Function,H::Function,x::Vector;maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false)
 
     his = zeros(maxIter,2)
     X = (storeInterm) ? zeros(length(x),maxIter) : []
     i = 1; flag = -1; LL = []
     while i<=maxIter
-        fc = f(x)
-        df = J(x)
-        his[i,:] = [fc norm(df)]
+        fk  = f(x)
+        dfk = df(x)
+        his[i,:] = [fk norm(dfk)]
         if storeInterm; X[:,i] = x; end;
 
-        if(norm(df)<atol)
+        if(norm(dfk)<atol)
             flag = 0
             his = his[1:i,:]
             break
@@ -30,7 +36,7 @@ function newton(f::Function,J::Function,H::Function,x::Vector;maxIter=20,atol=1e
                 throw(err)
             end
         end
-        pk    = - (LL\df)
+        pk    = - (LL\dfk)
         if out>0
             @printf "iter=%04d\tf=%1.2e\t|df|=%1.2e\n" i his[i,1] his[i,2]
         end

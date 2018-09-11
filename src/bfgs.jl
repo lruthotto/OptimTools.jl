@@ -1,29 +1,35 @@
 export bfgs
 
-function bfgs(f::Function,J::Function,x::Vector;H=speye(length(x)), maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
-	lineSearch::Function=(f,J,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=30))
+"""
+bfgs(f,df,x)
+
+BFGS method for solving min_x f(x)
+
+"""
+function bfgs(f::Function,df::Function,x::Vector;H=speye(length(x)), maxIter=20,atol=1e-8,out::Int=0,storeInterm::Bool=false,
+	lineSearch::Function=(f,df,fk,dfk,xk,pk)->armijo(f,fk,dfk,xk,pk,maxIter=30))
 
     his = zeros(maxIter,3)
     I   = speye(length(x))
     X   = (storeInterm) ? zeros(length(x),maxIter) : []
-    fc  = f(x)
-    df  = J(x)
+    fk  = f(x)
+    dfk = df(x)
  
     i = 1; flag = -1    
     while i<=maxIter
 
-        his[i,1:2] = [fc norm(df)]
+        his[i,1:2] = [fk norm(dfk)]
         if storeInterm; X[:,i] = x; end;
-        if norm(df)<atol
+        if norm(dfk)<atol
             his  = his[1:i,:]
             flag = 0
             break
         end
 
         # get search direction
-        pk    = - H*df
+        pk    = - H*dfk
         # line search
-        ak,his[i,3] = lineSearch(f,J,fc,df,x,pk) 
+        ak,his[i,3] = lineSearch(f,df,fk,dfk,x,pk) 
         if out>0
             @printf "iter=%4d\t|f|=%1.2e\t|df|=%1.2e\tLS=%d\n" i his[i,1] his[i,2] his[i,3]
         end
@@ -33,10 +39,10 @@ function bfgs(f::Function,J::Function,x::Vector;H=speye(length(x)), maxIter=20,a
              break;
         end
         x    += ak*pk
-        fc    = f(x)
-        dfnew = J(x)
+        fk    = f(x)
+        dfnew = df(x)
         sk    = ak*pk
-        yk    = dfnew - df
+        yk    = dfnew - dfk
         if dot(yk,sk)>0 # ensure that approximate Hessians remain positive definite
         	H     = (I - (sk*yk')/dot(sk,yk)) * H * (I - (yk*sk')/dot(sk,yk)) + (sk*sk')/dot(yk,sk)
         else
@@ -45,7 +51,7 @@ function bfgs(f::Function,J::Function,x::Vector;H=speye(length(x)), maxIter=20,a
             end
             H = speye(length(x))
         end
-        df   = dfnew
+        dfk  = dfnew
         i+=1     
     end
     i = min(maxIter,i)
